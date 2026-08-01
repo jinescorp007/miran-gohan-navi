@@ -1,20 +1,222 @@
-{
-  "name": "MIRAN LIFE ごはんナビ",
-  "short_name": "MIRAN LIFE",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f4f7f6",
-  "theme_color": "#1f6f5f",
-  "icons": [
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f6f5f">
+  <meta name="description" content="食事、症状、好き嫌い、飽きを記録して今日のおすすめを3つ提案">
+  <title>MIRAN LIFE ごはんナビ</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>MIRAN LIFE</h1>
+    <p>今日、何を食べよう？を早く決める</p>
+  </div>
+  <button id="settingsBtn" class="icon-btn" aria-label="設定">⚙️</button>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="today">今日</button>
+  <button class="tab" data-tab="record">記録</button>
+  <button class="tab" data-tab="catalog">食事図鑑</button>
+  <button class="tab" data-tab="menu">外食OCR</button>
+</nav>
+
+<main>
+  <section class="notice">
+    <strong>重要：</strong>このアプリは診断や安全保証をしません。強い症状が出た食品・料理は自己判断で再挑戦せず、医師へ相談してください。
+  </section>
+
+  <section id="today" class="panel active">
+    <div class="card hero">
+      <h2>今日のおすすめ3つ</h2>
+      <div class="selector-grid">
+        <label>場面
+          <select id="scene">
+            <option value="home">自宅</option>
+            <option value="convenience">コンビニ</option>
+            <option value="restaurant">外食</option>
+            <option value="snack">おやつ</option>
+          </select>
+        </label>
+        <label>食事
+          <select id="mealType">
+            <option value="breakfast">朝</option>
+            <option value="lunch">昼</option>
+            <option value="dinner" selected>夜</option>
+            <option value="snack">おやつ</option>
+          </select>
+        </label>
+        <label>時間
+          <select id="timeLimit">
+            <option value="10">10分以内</option>
+            <option value="30" selected>30分以内</option>
+            <option value="any">指定なし</option>
+          </select>
+        </label>
+        <label>今日の運動
+          <select id="activityToday">
+            <option value="low">少ない</option>
+            <option value="medium" selected>普通</option>
+            <option value="high">多い</option>
+          </select>
+        </label>
+      </div>
+      <button id="recommendBtn" class="primary">おすすめを3つ出す</button>
+      <div id="recommendations"></div>
+    </div>
+
+    <div class="card">
+      <h2>現在の要確認</h2>
+      <div id="watchList"></div>
+    </div>
+  </section>
+
+  <section id="record" class="panel">
+    <div class="card danger-card">
+      <h2>症状が出た食事を登録</h2>
+      <p class="small">最優先で記録します。原因を断定せず、食事と条件を時系列で残します。</p>
+      <div class="form-grid">
+        <label>日付<input id="incidentDate" type="date"></label>
+        <label>食べた時刻<input id="incidentTime" type="time"></label>
+        <label>料理・商品名<input id="incidentFood" placeholder="例：珍来のシンプルなラーメン"></label>
+        <label>店・メーカー<input id="incidentPlace" placeholder="例：珍来、○○製菓"></label>
+        <label>食べた量<input id="incidentAmount" placeholder="例：1人前、半分"></label>
+        <label>発症時刻<input id="onsetTime" type="time"></label>
+      </div>
+
+      <fieldset>
+        <legend>症状</legend>
+        <div class="check-grid">
+          <label><input type="checkbox" name="symptom" value="強いかゆみ">強いかゆみ</label>
+          <label><input type="checkbox" name="symptom" value="発疹・じんましん">発疹・じんましん</label>
+          <label><input type="checkbox" name="symptom" value="顔・唇の腫れ">顔・唇の腫れ</label>
+          <label><input type="checkbox" name="symptom" value="咳・息苦しさ">咳・息苦しさ</label>
+          <label><input type="checkbox" name="symptom" value="腹痛・嘔吐">腹痛・嘔吐</label>
+          <label><input type="checkbox" name="symptom" value="ぐったり">ぐったり</label>
+          <label><input type="checkbox" name="symptom" value="救急搬送">救急搬送</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>その日の条件</legend>
+        <div class="check-grid">
+          <label><input type="checkbox" name="factor" value="長時間の運動">長時間の運動</label>
+          <label><input type="checkbox" name="factor" value="激しい運動">激しい運動</label>
+          <label><input type="checkbox" name="factor" value="暑さ・大量の汗">暑さ・大量の汗</label>
+          <label><input type="checkbox" name="factor" value="疲労">疲労</label>
+          <label><input type="checkbox" name="factor" value="睡眠不足">睡眠不足</label>
+          <label><input type="checkbox" name="factor" value="体調不良">体調不良</label>
+        </div>
+      </fieldset>
+
+      <label>前後に食べたもの・経過
+        <textarea id="incidentNotes" rows="5" placeholder="例：昼はインスタントラーメンで症状なし。午後に饅頭。夜21時にラーメン。その後背中全面に発疹。"></textarea>
+      </label>
+      <button id="saveIncidentBtn" class="danger">症状記録を保存</button>
+      <div id="incidents"></div>
+    </div>
+
+    <div class="card">
+      <h2>今日食べたものを登録</h2>
+      <p class="small">症状なしの記録から食事図鑑が自動更新されます。別画面への二重入力は不要です。</p>
+      <div class="form-grid">
+        <label>料理・商品名<input id="mealName" placeholder="例：マクドナルド チーズバーガー"></label>
+        <label>店・メーカー<input id="mealBrand" placeholder="例：マクドナルド"></label>
+        <label>分類
+          <select id="mealCategory">
+            <option value="meal">食事</option>
+            <option value="snack">お菓子・おやつ</option>
+            <option value="staple">主食</option>
+            <option value="side">おかず</option>
+            <option value="drink">飲み物</option>
+          </select>
+        </label>
+        <label>場面
+          <select id="mealScene">
+            <option value="home">自宅</option>
+            <option value="convenience">コンビニ</option>
+            <option value="restaurant">外食</option>
+            <option value="school">学校</option>
+          </select>
+        </label>
+        <label>好き度
+          <select id="liking">
+            <option value="5">大好き</option>
+            <option value="4">好き</option>
+            <option value="3" selected>普通</option>
+            <option value="2">少し苦手</option>
+            <option value="1">嫌い</option>
+          </select>
+        </label>
+        <label>今回の症状
+          <select id="mealSymptom">
+            <option value="none">なし</option>
+            <option value="mild">軽い症状</option>
+            <option value="strong">強い症状</option>
+          </select>
+        </label>
+      </div>
+      <label>メモ<input id="mealMemo" placeholder="例：パンも一緒に完食、症状なし"></label>
+      <button id="saveMealBtn" class="primary">食事記録を保存</button>
+    </div>
+  </section>
+
+  <section id="catalog" class="panel">
+    <div class="card">
+      <div class="title-row">
+        <h2>食事図鑑</h2>
+        <select id="catalogFilter">
+          <option value="all">すべて</option>
+          <option value="safe">症状なし実績</option>
+          <option value="watch">要確認</option>
+          <option value="snack">お菓子</option>
+          <option value="convenience">コンビニ</option>
+          <option value="restaurant">外食</option>
+        </select>
+      </div>
+      <div id="catalogList"></div>
+    </div>
+  </section>
+
+  <section id="menu" class="panel">
+    <div class="card">
+      <h2>外食メニューOCR</h2>
+      <label class="camera">
+        📷 メニュー写真を撮る／選ぶ
+        <input id="imageInput" type="file" accept="image/*" capture="environment">
+      </label>
+      <img id="preview" hidden alt="メニュー画像">
+      <button id="ocrBtn" class="primary" disabled>文字を読み取る</button>
+      <div id="ocrStatus" class="small"></div>
+      <textarea id="menuText" rows="9" placeholder="読み取った文字を確認・修正してください。"></textarea>
+      <button id="analyzeBtn" class="primary">登録情報と照合</button>
+      <div id="menuResults"></div>
+    </div>
+  </section>
+</main>
+
+<dialog id="settingsDialog">
+  <form method="dialog" class="dialog-form">
+    <div class="title-row">
+      <h2>アレルギー検査と食事設定</h2>
+      <button value="cancel" class="icon-btn">✕</button>
+    </div>
+    <p class="small">検査結果と実生活の食べられる実績を分けて管理します。</p>
+    <div id="allergenSettings"></div>
+    <button id="saveSettingsBtn" value="default" class="primary">保存</button>
+  </form>
+</dialog>
+
+<footer>
+  呼吸困難、顔・舌の腫れ、繰り返す嘔吐、ぐったりなどがあれば119番。処方薬は医師の指示に従ってください。
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
